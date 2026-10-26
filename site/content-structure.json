@@ -1,0 +1,46 @@
+{
+  "note": "Blank authoring structures only. These objects are not loaded by the public website and are not valid published content.",
+  "common": {
+    "id": "",
+    "slug": "",
+    "title": "",
+    "aliases": [],
+    "summary": "",
+    "publication_status": "draft",
+    "theme_links": [],
+    "discipline_ids": [],
+    "environment_ids": [],
+    "training_format_ids": [],
+    "media": [],
+    "sources": [],
+    "display_order": null,
+    "updated_at": null
+  },
+  "exercise": {
+    "content_type": "exercise",
+    "equipment_ids": [],
+    "primary_muscle_ids": [],
+    "secondary_muscle_ids": [],
+    "movement_pattern_ids": [],
+    "steps": [],
+    "technical_notes": [],
+    "common_errors": [],
+    "related_content_ids": []
+  },
+  "guide": {
+    "content_type": "guide",
+    "introduction": "",
+    "sections": [],
+    "related_content_ids": []
+  },
+  "workout-template": {
+    "content_type": "workout-template",
+    "purpose": "",
+    "suitability": "",
+    "equipment_ids": [],
+    "estimated_duration_minutes": null,
+    "segments": [],
+    "adjustment_notes": [],
+    "related_content_ids": []
+  }
+}

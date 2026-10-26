@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0e0c">
+  <meta name="description" content="JY FITNESS ATLAS — 探索不同训练方式，找到属于你的下一步。健身房、户外与功能性训练的主题探索网站。">
+  <title>JY FITNESS ATLAS · 探索你的训练世界</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/gym.jpg" as="image">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳转至主要内容</a>
+  <div id="app"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <dialog id="search-dialog" class="modal search-modal" aria-labelledby="search-title">
+    <div class="modal-top"><span class="eyebrow">SEARCH THE ATLAS</span><button class="icon-button" data-close="search-dialog" aria-label="关闭全站搜索">✕</button></div>
+    <h2 id="search-title">你想探索什么？</h2>
+    <p class="muted">搜索全部主题中的已发布内容。</p>
+    <form id="global-search-form" class="global-search-form"><label class="sr-only" for="global-query">全站搜索关键词</label><input id="global-query" name="q" type="search" maxlength="180" placeholder="输入动作、训练方式或关键词" autocomplete="off"><button class="button primary" type="submit">搜索 <span aria-hidden="true">↗</span></button></form>
+    <p class="search-hint">当前为探索预览版，训练内容将陆续填入。</p>
+  </dialog>
+  <dialog id="filter-dialog" class="modal filter-modal" aria-labelledby="filter-title"></dialog>
+  <noscript><p class="noscript">请启用浏览器 JavaScript，以使用主题探索与筛选。</p></noscript>
+</body>
+</html>

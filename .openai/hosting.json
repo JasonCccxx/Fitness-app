@@ -1,0 +1,7 @@
+{
+  "project_id": "appgprj_6ad62fb93a6c8191870c050c870b07cf",
+  "static": {
+    "directory": "dist",
+    "not_found_handling": "single-page-application"
+  }
+}

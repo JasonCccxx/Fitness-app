@@ -1,0 +1,29 @@
+[
+  {
+    "id": "squat",
+    "duration": 4.0,
+    "frames": 97,
+    "sha256": "bae9b8b383747110b20e5caea87970a49e2feb080c8616532766725d55aa3766",
+    "max_bone_length_drift_m": 6.661338147750939e-16,
+    "loop_matrix_error": 0.0,
+    "professional_review": false
+  },
+  {
+    "id": "push-up",
+    "duration": 4.0,
+    "frames": 97,
+    "sha256": "20a299cbad3091fb2dd25523d5af97de5712736666c0a991f8fe159855658757",
+    "max_bone_length_drift_m": 6.661338147750939e-16,
+    "loop_matrix_error": 0.0,
+    "professional_review": false
+  },
+  {
+    "id": "dumbbell-curl",
+    "duration": 4.0,
+    "frames": 97,
+    "sha256": "b38c7660c4c8b5770cfd2080edd044380d610671a76690c2cec682dc1fb7f7ef",
+    "max_bone_length_drift_m": 4.440892098500626e-16,
+    "loop_matrix_error": 0.0,
+    "professional_review": false
+  }
+]
