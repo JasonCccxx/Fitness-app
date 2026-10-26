@@ -1,0 +1,6 @@
+{
+  "provider": "supabase",
+  "supabaseUrl": "https://dsinrfllbtlnpuvuiwrt.supabase.co",
+  "publishableKey": "sb_publishable_GftJ-0YwAXDGAUsaCj1MzA_svRJprtW",
+  "googleEnabled": true
+}

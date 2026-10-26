@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const files = ['server.mjs', 'dist/app.js', 'dist/core.js', 'dist/data.js', 'scripts/check.mjs', 'scripts/smoke.mjs'];
+const files = ['server.mjs', 'dist/app.js', 'dist/core.js', 'dist/data.js', 'dist/atlas-api.js', 'client/atlas-api.js', 'dist/account/account.js', 'dist/admin/admin.js', 'dist/motion-lab/motion-lab.js', 'scripts/build-client.mjs', 'scripts/check.mjs', 'scripts/smoke.mjs'];
 for (const file of files) {
   const result = spawnSync(process.execPath, ['--check', join(root, file)], { encoding: 'utf8' });
   if (result.status !== 0) { console.error(result.stderr); process.exit(1); }
@@ -28,4 +28,11 @@ async function checkDocuments(directory) {
 }
 await checkDocuments(resolve(root, '../docs'));
 JSON.parse(await readFile(join(root, 'content-structure.json'), 'utf8'));
+const config = JSON.parse(await readFile(join(root, 'dist/backend-config.json'), 'utf8'));
+if (config.provider !== 'supabase' || new URL(config.supabaseUrl).protocol !== 'https:' || !config.publishableKey.startsWith('sb_publishable_')) throw new Error('Expected public Supabase client configuration');
+for (const file of ['account/index.html','admin/index.html','workspace.css']) await stat(join(root,'dist',file));
+for (const name of ['squat','push-up','dumbbell-curl']) {
+  await stat(join(root,'backend/media',name+'.glb'));
+  if (await stat(join(root,'dist/motion-lab/assets',name+'.glb')).catch(()=>null)) throw new Error('Backend media should not be bundled as public static files');
+}
 console.log('Syntax, required local assets, document metadata and Markdown links: PASS');

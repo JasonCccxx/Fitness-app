@@ -9,7 +9,7 @@ const lab = resolve(root, 'dist/motion-lab');
 const reports = JSON.parse(await readFile(resolve(lab, 'assets/build-report.json'), 'utf8'));
 assert.deepEqual(reports.map(report => report.id), ['squat', 'push-up', 'dumbbell-curl']);
 for (const report of reports) {
-  const bytes = await readFile(resolve(lab, 'assets', `${report.id}.glb`));
+  const bytes = await readFile(resolve(root, 'backend/media', `${report.id}.glb`));
   assert.equal(bytes.toString('ascii', 0, 4), 'glTF');
   assert.equal(bytes.readUInt32LE(4), 2);
   assert.equal(bytes.readUInt32LE(8), bytes.length);

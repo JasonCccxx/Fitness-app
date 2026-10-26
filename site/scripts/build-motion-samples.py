@@ -10,7 +10,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'site/source-assets/human-base.glb'
 if not SOURCE.exists(): SOURCE = ROOT / '.local/push_up-cc0.glb'
-OUTPUT = ROOT / 'site/dist/motion-lab/assets'
+OUTPUT = ROOT / 'site/backend/media'
 
 def read_glb(path):
     raw = path.read_bytes()
@@ -281,4 +281,4 @@ for kind in ['squat','push-up','dumbbell-curl']:
     assert loop_error<.00001, (kind,loop_error)
     reports.append({'id':kind,'duration':duration,'frames':frames,'sha256':sha,'max_bone_length_drift_m':max_drift,'loop_matrix_error':loop_error,'professional_review':False})
 print(json.dumps(reports,indent=2))
-(OUTPUT/'build-report.json').write_text(json.dumps(reports,indent=2)+'\n',encoding='utf-8')
+(ROOT/'site/dist/motion-lab/assets/build-report.json').write_text(json.dumps(reports,indent=2)+'\n',encoding='utf-8')

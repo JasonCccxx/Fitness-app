@@ -1,15 +1,14 @@
+import * as backend from '/atlas-api.js';
 await customElements.whenDefined('model-viewer');
-const samples = {
-  squat: { title: '徒手深蹲', english: 'BODYWEIGHT SQUAT', pattern: '01 / LOWER BODY', description: '观察髋、膝与躯干在同一次起落中的配合。', tags: ['下肢复合动作', '无器械'], focus: ['从侧面观察髋部下降与回升的路径。', '暂停在底部，比较膝、髋和躯干的位置。', '切换正面，检查双侧动作与脚部接触。'], phases: ['站立', '下蹲中', '底部'], times: [0, 1, 2], view: 'angle', orbit: '35deg 78deg 3.5m' },
-  'push-up': { title: '俯卧撑', english: 'PUSH-UP', pattern: '02 / HORIZONTAL PUSH', description: '从侧面与斜侧观察支撑、屈肘和身体起落。', tags: ['水平推动作', '无器械'], focus: ['从侧面观察躯干与下肢的整体起落。', '放慢播放，观察屈肘时上臂的位置变化。', '切换视角，检查手掌和脚尖的接触。'], phases: ['撑起', '下降中', '底部'], times: [0, 1, 2], view: 'side', orbit: '90deg 80deg 3.3m' },
-  'dumbbell-curl': { title: '哑铃弯举', english: 'DUMBBELL CURL', pattern: '03 / ELBOW FLEXION', description: '把注意力放在肘部、前臂和器械的相对运动上。', tags: ['单关节负重动作', '哑铃'], focus: ['从侧面观察屈肘和伸肘的完整过程。', '暂停在顶部，比较上臂和躯干的位置。', '检查器械是否随手部运动、两侧是否一致。'], phases: ['起始', '弯举中', '顶部'], times: [0, 1, 2], view: 'angle', orbit: '30deg 78deg 3.5m' },
-};
+const samples = {};
+const records = new Map();
+let clipDuration = 4;
 const model = document.querySelector('#model');
 const timeline = document.querySelector('#timeline');
 const playButton = document.querySelector('#play');
 const speed = document.querySelector('#speed');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let active = Object.hasOwn(samples, new URLSearchParams(location.search).get('exercise')) ? new URLSearchParams(location.search).get('exercise') : 'squat';
+let active = '';
 let ready = false;
 let requestId = 0;
 let exporting = false;
@@ -21,6 +20,7 @@ function setPlayState(playing) {
   playButton.setAttribute('aria-label', playing ? '暂停动画' : '播放动画');
 }
 function setView(view) {
+  if (!samples[active]) return;
   const orbit = view === 'front' ? '0deg 78deg 3.9m' : view === 'side' ? '90deg 80deg 3.9m' : samples[active].orbit.replace(/3\.[35]m$/, '3.9m');
   model.removeAttribute('camera-orbit');
   model.setAttribute('camera-orbit', orbit);
@@ -29,15 +29,18 @@ function setView(view) {
 }
 function updateTime() {
   if (!ready) return;
-  const time = Math.min(4, Math.max(0, model.currentTime || 0));
+  const time = Math.min(clipDuration, Math.max(0, model.currentTime || 0));
   timeline.value = time;
   document.querySelector('#time').value = time.toFixed(1);
-  const phase = time < .25 || time > 3.75 ? 0 : time < 1.75 ? 1 : time < 2.25 ? 2 : 3;
+  const progress = time / clipDuration;
+  const phase = progress < .06 || progress > .94 ? 0 : progress < .44 ? 1 : progress < .56 ? 2 : 3;
   document.querySelector('#phase-label').textContent = phase === 3 ? '返回起始' : samples[active].phases[phase];
 }
 function showSample(id, updateUrl = true) {
   if (exporting) return;
   active = id; const sample = samples[id];
+  const record = records.get(id);
+  if (record.media_expires_at <= Date.now()) { loadCatalogue(id); return; }
   ready = false; playButton.disabled = true;
   document.querySelector('#export-gif').disabled = true;
   document.querySelector('#export-status').textContent = '';
@@ -61,17 +64,19 @@ function showSample(id, updateUrl = true) {
       document.querySelectorAll('#phase-buttons button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
     }); return button;
   }));
-  const download = document.querySelector('#download'); download.href = `./assets/${id}.glb`; download.download = `jy-atlas-${id}.glb`;
+  const download = document.querySelector('#download'); download.href = record.media.find(item => item.kind === 'model')?.url || '#'; download.download = `jy-atlas-${record.slug}.glb`;
   document.querySelectorAll('[data-exercise]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.exercise === id)));
   model.alt = `${sample.title}的三维人体动作样本，可旋转和暂停观察`;
-  model.setAttribute('camera-target', id === 'push-up' ? '0m 0.32m -0.05m' : '0m 0.85m 0.05m');
-  model.setAttribute('src', `./assets/${id}.glb`); setView(sample.view); timeline.value = 0;
-  if (updateUrl) history.replaceState(null, '', `?exercise=${id}`);
+  model.setAttribute('camera-target', sample.camera_target || '0m 0.85m 0.05m');
+  model.setAttribute('src', record.media.find(item => item.kind === 'model').url); setView(sample.view); timeline.value = 0;
+  if (updateUrl) history.replaceState(null, '', `?content=${encodeURIComponent(id)}`);
 }
 model.addEventListener('load', () => {
   ready = true; playButton.disabled = false;
   document.querySelector('#export-gif').disabled = false;
   document.querySelector('#load-status').hidden = true;
+  clipDuration = model.duration || 4; timeline.max = clipDuration;
+  document.querySelector('#end-time').textContent = clipDuration.toFixed(1);
   model.currentTime = 0; model.timeScale = Number(speed.value);
   setPlayState(!reducedMotion); updateTime();
 });
@@ -81,13 +86,14 @@ model.addEventListener('error', () => {
   document.querySelector('#stage-error').hidden = false;
   document.querySelector('#load-status').hidden = true;
 });
-document.querySelectorAll('[data-exercise]').forEach(button => button.addEventListener('click', () => showSample(button.dataset.exercise)));
+
 document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
 playButton.addEventListener('click', () => setPlayState(model.paused));
 timeline.addEventListener('input', () => { if (!ready) return; setPlayState(false); model.currentTime = Number(timeline.value); updateTime(); document.querySelectorAll('#phase-buttons button').forEach(button => button.setAttribute('aria-pressed', 'false')); });
 speed.addEventListener('change', () => { model.timeScale = Number(speed.value); });
 document.querySelector('#reset').addEventListener('click', () => { if (!ready) return; model.currentTime = 0; speed.value = '1'; model.timeScale = 1; setView(samples[active].view); setPlayState(!reducedMotion); document.querySelectorAll('#phase-buttons button').forEach(button => button.setAttribute('aria-pressed', 'false')); updateTime(); });
-document.querySelector('#retry').addEventListener('click', () => { const src = model.src; model.removeAttribute('src'); requestAnimationFrame(() => { model.src = src; }); });
+document.querySelector('#retry').addEventListener('click', () => loadCatalogue());
+document.querySelector('#download').addEventListener('click', async event => { event.preventDefault(); try { location.assign(await backend.mediaDownloadURL(records.get(active),'model')); } catch { document.querySelector('#export-status').textContent = '下载暂未完成，请重新读取内容后再试。'; } });
 document.querySelector('#export-gif').addEventListener('click', async () => {
   if (!ready || exporting) return;
   exporting = true;
@@ -106,7 +112,7 @@ document.querySelector('#export-gif').addEventListener('click', async () => {
     const context = canvas.getContext('2d', { willReadFrequently: true });
     for (let frame = 0; frame < 40; frame++) {
       status.textContent = `正在导出动图 ${Math.round((frame + 1) / 40 * 100)}%…`;
-      model.currentTime = frame / 10;
+      model.currentTime = frame / 40 * clipDuration;
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const png = await model.toBlob({ mimeType: 'image/png' });
       const image = await createImageBitmap(png);
@@ -121,7 +127,7 @@ document.querySelector('#export-gif').addEventListener('click', async () => {
       context.fillText('VISUAL PROTOTYPE', 502, 465);
       const rgba = context.getImageData(0, 0, 640, 480).data;
       const palette = quantize(rgba, 128);
-      gif.writeFrame(applyPalette(rgba, palette), 640, 480, { palette, delay: 100, repeat: 0 });
+      gif.writeFrame(applyPalette(rgba, palette), 640, 480, { palette, delay: clipDuration / 40 * 1000, repeat: 0 });
     }
     gif.finish();
     const url = URL.createObjectURL(new Blob([gif.bytes()], { type: 'image/gif' }));
@@ -141,4 +147,40 @@ document.querySelector('#export-gif').addEventListener('click', async () => {
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelAnimationFrame(requestId); } else tick(); });
 function tick() { cancelAnimationFrame(requestId); updateTime(); if (!document.hidden) requestId = requestAnimationFrame(tick); }
-showSample(active, false); tick();
+async function loadCatalogue(preferred = null) {
+  ready = false; playButton.disabled = true;
+  model.pause(); model.removeAttribute('src'); records.clear();
+  document.querySelector('.exercise-tabs').replaceChildren();
+  document.querySelector('#stage-error').hidden = true;
+  document.querySelector('#load-status').hidden = false;
+  document.querySelector('#load-status').textContent = '正在读取已发布的 3D 内容…';
+  try {
+    const rows = await backend.listPublishedContent();
+    const available = rows.filter(row => row.content_type === 'exercise' && row.media.some(media => media.kind === 'model' && media.url));
+    if (!available.length) throw new Error('当前尚无已发布的 3D 内容。');
+    records.clear();
+    document.querySelector('.exercise-tabs').replaceChildren(...available.map((record,index) => {
+      records.set(record.id,record);
+      const motion = record.details?.motion || {};
+      samples[record.id] = { title:record.title,english:record.english_title || '',pattern:motion.pattern || `${String(index+1).padStart(2,'0')} / MOVEMENT`,description:record.summary,tags:record.details?.tags || ['动作资料'],focus:record.details?.focus || motion.focus || [],phases:motion.phases || ['起始','运动中','关键位置'],times:motion.times || [0,1,2],view:motion.view || 'angle',orbit:motion.orbit || '35deg 78deg 3.9m',camera_target:motion.camera_target };
+      const button = document.createElement('button');button.dataset.exercise=record.id;button.setAttribute('aria-pressed','false');
+      const number = document.createElement('span');number.textContent=String(index+1).padStart(2,'0');
+      const title = document.createElement('strong');title.textContent=record.title;
+      const english = document.createElement('small');english.textContent=record.english_title || '';
+      const arrow = document.createElement('b');arrow.textContent='↗';
+      button.append(number,title,english,arrow);button.addEventListener('click',()=>showSample(record.id));return button;
+    }));
+    const params=new URLSearchParams(location.search);
+    const requested=preferred || params.get('content') || params.get('exercise');
+    const selected=available.find(row=>row.id===requested || row.details?.motion?.sample_id===requested)?.id || (records.has(active)?active:available[0].id);
+    showSample(selected,false);
+    document.querySelector('.sample-badge').textContent=`已发布 3D 内容 · ${available.length} 项`;
+    backend.recordActivity('content_view','/motion-lab',selected);
+  } catch(error) {
+    document.querySelector('#load-status').hidden=true;
+    document.querySelector('#stage-error').hidden=false;
+    document.querySelector('#stage-error strong').textContent='3D 内容暂不可用';
+    document.querySelector('#stage-error p').textContent=error.message;
+  }
+}
+loadCatalogue(); tick();

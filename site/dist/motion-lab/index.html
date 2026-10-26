@@ -15,12 +15,8 @@
   <a class="skip" href="#main">跳转至动作样本</a>
   <header class="site-header"><a class="brand" href="/"><img src="/assets/favicon.svg" width="34" height="34" alt=""><span>JY FITNESS <b>ATLAS<span class="lime">.</span></b></span></a><a class="back" href="/">返回探索首页 <span>↗</span></a></header>
   <main id="main">
-    <div class="intro"><div><span class="eyebrow"><i></i> THE MOVEMENT STUDY / 001—003</span><h1>换个角度，<br>看懂每一次<span>运动。</span></h1></div><div class="intro-aside"><span class="sample-badge">3D 动作样本 · v0.1</span><p>旋转、放慢、停在某一刻。<br>先体验三种动作，探索教程的表达方式。</p></div></div>
-    <nav class="exercise-tabs" aria-label="选择动作样本">
-      <button data-exercise="squat" aria-pressed="true"><span>01</span><strong>徒手深蹲</strong><small>BODYWEIGHT SQUAT</small><b>↗</b></button>
-      <button data-exercise="push-up" aria-pressed="false"><span>02</span><strong>俯卧撑</strong><small>PUSH-UP</small><b>↗</b></button>
-      <button data-exercise="dumbbell-curl" aria-pressed="false"><span>03</span><strong>哑铃弯举</strong><small>DUMBBELL CURL</small><b>↗</b></button>
-    </nav>
+    <div class="intro"><div><span class="eyebrow"><i></i> THE MOVEMENT STUDY / 001—003</span><h1>换个角度，<br>看懂每一次<span>运动。</span></h1></div><div class="intro-aside"><span class="sample-badge">正在读取发布内容</span><p>旋转、放慢、停在某一刻。<br>先体验三种动作，探索教程的表达方式。</p></div></div>
+    <nav class="exercise-tabs" aria-label="选择已发布的动作"><span class="muted">正在读取内容…</span></nav>
     <section class="study" aria-label="动作观察区">
       <div class="stage-panel">
         <div class="stage-top"><span><i class="live-dot"></i> INTERACTIVE 3D</span><span id="model-label">01 / LOWER BODY</span></div>
@@ -33,17 +29,17 @@
           <span class="drag-hint">拖动旋转 · 双指缩放</span>
           <div class="view-buttons" role="group" aria-label="观察视角"><button data-view="front" aria-pressed="false">正面</button><button data-view="side" aria-pressed="false">侧面</button><button data-view="angle" aria-pressed="true">斜侧</button></div>
         </div>
-        <div class="transport"><button id="play" aria-label="暂停动画" class="play-button">Ⅱ</button><div class="timeline"><div><span id="phase-label">准备</span><span><output id="time">0.0</output> / 4.0 s</span></div><label class="sr-only" for="timeline">动画进度</label><input id="timeline" type="range" min="0" max="4" step=".01" value="0"></div><label class="speed-label" for="speed">速度<select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option></select></label><button id="reset" class="reset-button" aria-label="重置动画和视角">↺</button></div>
+        <div class="transport"><button id="play" aria-label="暂停动画" class="play-button">Ⅱ</button><div class="timeline"><div><span id="phase-label">准备</span><span><output id="time">0.0</output> / <span id="end-time">4.0</span> s</span></div><label class="sr-only" for="timeline">动画进度</label><input id="timeline" type="range" min="0" max="4" step=".01" value="0"></div><label class="speed-label" for="speed">速度<select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option></select></label><button id="reset" class="reset-button" aria-label="重置动画和视角">↺</button></div>
       </div>
       <aside class="notes-panel" aria-labelledby="exercise-title">
-        <div class="notes-heading"><span class="eyebrow" id="pattern">01 / LOWER BODY</span><h2 id="exercise-title">徒手深蹲</h2><span class="english-title" id="english-title">BODYWEIGHT SQUAT</span><p id="exercise-description">观察髋、膝与躯干在同一次起落中的配合。</p></div>
-        <div class="tags" id="tags"><span>下肢复合动作</span><span>无器械</span></div>
+        <div class="notes-heading"><span class="eyebrow" id="pattern">01 / LOWER BODY</span><h2 id="exercise-title">动作资料</h2><span class="english-title" id="english-title"></span><p id="exercise-description">选择已发布的动作进行观察。</p></div>
+        <div class="tags" id="tags"></div>
         <div class="focus-heading"><h3>这一次，观察什么</h3><span>FOCUS POINTS</span></div>
         <ol id="focus-points"></ol>
         <div class="phase-heading"><h3>停在关键阶段</h3><span>点击暂停查看</span></div>
         <div class="phase-buttons" id="phase-buttons"></div>
         <button id="export-gif" class="export-gif" disabled>导出当前视角动图 <span>GIF ↓</span></button><p id="export-status" role="status" class="export-status"></p>
-        <a id="download" href="./assets/squat.glb" download="jy-atlas-squat.glb" class="download">下载 3D 样本 <span>GLB ↗</span></a>
+        <a id="download" href="#" download="jy-atlas-squat.glb" class="download">下载 3D 样本 <span>GLB ↗</span></a>
       </aside>
     </section>
     <section class="review-note"><span class="note-mark">↗</span><div><h3>正在打磨的是「如何表达」。</h3><p>这三个样本用于比较动作表现、视角与播放体验，尚未完成专业动作审核，不作为正式训练教程。人体外观保持统一；当前未加入肌肉激活或受力模拟。</p></div><span class="review-status">VISUAL PROTOTYPE<br>REVIEW PENDING</span></section>
